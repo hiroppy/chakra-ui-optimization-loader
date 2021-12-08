@@ -31,11 +31,7 @@ const schema = {
   },
 };
 
-const targetedFiles = [
-  'theme/dist/esm/components/index.js',
-  'theme/dist/esm/foundations/colors.js',
-  'theme/dist/esm/foundations/breakpoints.js',
-];
+const targetedFiles = ['theme/dist/chakra-ui-theme.esm.js'];
 
 function loader(source) {
   if (!targetedFiles.some((file) => this.resourcePath.includes(file))) {
@@ -51,38 +47,24 @@ function loader(source) {
 
   const ast = parse(source, { sourceType: 'module' });
 
-  if (Array.isArray(options.ignoreComponents) && this.resourcePath.includes(targetedFiles[0])) {
+  if (this.resourcePath.includes(targetedFiles[0])) {
     traverse(ast, {
-      ExportDefaultDeclaration({ node }) {
-        if (t.isObjectExpression(node.declaration)) {
-          node.declaration.properties = node.declaration.properties.filter(
-            ({ value }) => !options.ignoreComponents.includes(value.name)
+      ObjectExpression({ node }) {
+        if (Array.isArray(options.ignoreComponents)) {
+          node.properties = node.properties.filter(
+            ({ key }) => !options.ignoreComponents.includes(key.name)
           );
         }
-      },
-    });
-
-    return generate(ast).code;
-  }
-
-  if (Array.isArray(options.ignoreColors) && this.resourcePath.includes(targetedFiles[1])) {
-    traverse(ast, {
-      ObjectExpression({ node }) {
-        node.properties = node.properties.filter(
-          ({ key }) => !options.ignoreColors.includes(key.name)
-        );
-      },
-    });
-
-    return generate(ast).code;
-  }
-
-  if (Array.isArray(options.ignoreBreakpoints) && this.resourcePath.includes(targetedFiles[2])) {
-    traverse(ast, {
-      ObjectExpression({ node }) {
-        node.properties = node.properties.filter(
-          ({ key }) => !options.ignoreBreakpoints.includes(key.name)
-        );
+        if (Array.isArray(options.ignoreColors)) {
+          node.properties = node.properties.filter(
+            ({ key }) => !options.ignoreColors.includes(key.name)
+          );
+        }
+        if (Array.isArray(options.ignoreBreakpoints)) {
+          node.properties = node.properties.filter(
+            ({ key }) => !options.ignoreBreakpoints.includes(key.name)
+          );
+        }
       },
     });
 

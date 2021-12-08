@@ -7,7 +7,7 @@ module.exports = withBundleAnalyzer({
   webpack: (config) => {
     config.module.rules.push({
       test: /\.js/,
-      include: resolve('./node_modules/@chakra'),
+      include: resolve('./node_modules/@chakra-ui'),
       loader: resolve('../../src/index.js'),
       options: {
         ignoreComponents: ['Alert', 'Table', 'Tabs', 'Slider'],
